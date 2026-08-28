@@ -50,7 +50,7 @@ pipeline {
 
         APP_JAR = "${params.PROJECT_DIR}/target/${params.JAR_NAME}"
 
-        WAR_NAME = "${params.WAR_NAME}"
+        WAR_NAME = 'CheckerMaker.war'
 
         APP_CONTEXT_PATH = "${params.APP_CONTEXT_PATH}"
 
@@ -64,7 +64,7 @@ pipeline {
 
         APPZ_HOME = "${params.APPZ_HOME}"
 
-        APPZ_ARTIFACTS = "${params.APPZ_ARTIFACTS}"
+        APPZ_ARTIFACTS = 'D:/jenkins-testing'
 
         TOMCAT_PORT = "${params.TOMCAT_PORT}"
 
