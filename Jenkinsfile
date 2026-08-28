@@ -101,6 +101,14 @@ pipeline {
                 git branch: params.GIT_BRANCH,
                     url: params.GIT_URL
 
+                bat '''
+                    @echo off
+                    for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%BACKEND_PORT% ^| findstr LISTENING') do (
+                        taskkill /F /PID %%a >nul 2>&1
+                    )
+                    powershell -NoProfile -ExecutionPolicy Bypass -Command "$processes = Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'java.exe' -and $_.CommandLine -like '*maker-checker-bank*' }; $processes | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"
+                '''
+
                 dir(params.PROJECT_DIR) {
                     deleteDir()
                     git branch: params.MODULE_GIT_BRANCH,
