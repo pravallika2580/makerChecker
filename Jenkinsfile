@@ -76,6 +76,8 @@ pipeline {
 
         PLAYWRIGHT_BROWSERS_PATH = "${params.PLAYWRIGHT_BROWSERS_PATH}"
 
+        NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
         CI = 'true'
     }
 
