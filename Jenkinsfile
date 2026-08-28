@@ -10,6 +10,8 @@ pipeline {
 
         string(name: 'GIT_URL', defaultValue: 'https://github.com/pravallika2580/makerChecker.git', description: 'Git repository URL')
         string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to build')
+        string(name: 'MODULE_GIT_URL', defaultValue: 'https://github.com/pravallika2580/CoorporateBanking.git', description: 'Git repository URL for the bank Maven module')
+        string(name: 'MODULE_GIT_BRANCH', defaultValue: 'main', description: 'Git branch for the bank Maven module')
         string(name: 'PROJECT_DIR', defaultValue: 'Fund/makerchecker-bank', description: 'Maven project directory')
         string(name: 'APP_NAME', defaultValue: 'MakerCheckerBank', description: 'Application name used in logs and process titles')
         string(name: 'JAR_NAME', defaultValue: 'maker-checker-bank-0.0.1-SNAPSHOT.jar', description: 'Built JAR file name')
@@ -97,6 +99,12 @@ pipeline {
                 git branch: params.GIT_BRANCH,
                     url: params.GIT_URL
 
+                dir(params.PROJECT_DIR) {
+                    deleteDir()
+                    git branch: params.MODULE_GIT_BRANCH,
+                        url: params.MODULE_GIT_URL
+                }
+
                 echo "${params.APP_NAME.toUpperCase()} CHECKOUT SUCCESSFUL"
             }
         }
@@ -126,6 +134,8 @@ pipeline {
                 echo 'STARTING MAVEN BUILD'
                 echo '=========================================='
 
+                bat 'mvn -f "Fund\\audit-library\\pom.xml" install -DskipTests'
+                bat 'mvn -f "Fund\\rbc-library\\pom.xml" install -DskipTests'
                 bat 'mvn -f "%PROJECT_DIR%\\pom.xml" clean package -DskipTests'
 
                 echo '=========================================='
