@@ -1,0 +1,11 @@
+package com.example.audit.service;
+import com.example.audit.exception.*; import com.example.audit.model.*; import com.example.audit.repository.*; import java.time.Instant; import java.util.*; import org.junit.jupiter.api.Test; import static org.junit.jupiter.api.Assertions.*;
+class AuditServiceTest { private final InMemoryAuditRepository repository=new InMemoryAuditRepository(); private final AuditService service=new AuditService(repository); private AuditEvent event(AuditStatus status){return AuditEvent.builder().actor("user1").action("CREATE").resource("USER").status(status).build();}
+ @Test void recordsSuccessfulEvent(){service.record(event(AuditStatus.SUCCESS));assertEquals(1,repository.findAll().size());}
+ @Test void recordsFailedAndDeniedEvents(){service.record(event(AuditStatus.FAILED));service.record(event(AuditStatus.DENIED));assertEquals(List.of("FAILED","DENIED"),repository.findAll().stream().map(AuditEvent::getStatus).toList());}
+ @Test void preservesArbitraryMetadata(){AuditEvent e=AuditEvent.builder().actor("u").action("A").resource("R").status("SUCCESS").metadata(Map.of("amount",5000,"source","ACCOUNT1")).build();service.record(e);assertEquals(5000,repository.findAll().get(0).getMetadata().get("amount"));}
+ @Test void generatesTimestampAndId(){AuditEvent e=event(AuditStatus.SUCCESS);assertNotNull(e.getId());assertNotNull(e.getTimestamp());assertTrue(e.getTimestamp().isBefore(Instant.now().plusSeconds(1)));}
+ @Test void rejectsInvalidEvents(){assertThrows(InvalidAuditEventException.class,()->AuditEvent.builder().action("A").resource("R").status("SUCCESS").build());assertThrows(InvalidAuditEventException.class,()->service.record(null));}
+ @Test void storesMultipleIndependentEvents(){service.record(event(AuditStatus.SUCCESS));service.record(AuditEvent.builder().actor("user2").action("DELETE").resource("USER").status("REJECTED").build());assertEquals(2,repository.findAll().size());assertNotEquals(repository.findAll().get(0).getId(),repository.findAll().get(1).getId());}
+ @Test void wrapsRepositoryFailure(){AuditService failing=new AuditService(e->{throw new IllegalStateException("database down");});assertThrows(AuditPersistenceException.class,()->failing.record(event(AuditStatus.SUCCESS)));}
+}
