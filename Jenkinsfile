@@ -26,6 +26,8 @@ pipeline {
         string(name: 'BACKEND_URL', defaultValue: 'http://localhost:8080/api/accounts?username=maker', description: 'Backend health-check URL')
         string(name: 'APPZILLON_URL', defaultValue: '', description: 'Tomcat application health-check URL, if applicable')
         string(name: 'PLAYWRIGHT_BASE_URL', defaultValue: 'http://localhost:8080/', description: 'Playwright application URL')
+        booleanParam(name: 'DEPLOY_APPZILLON', defaultValue: false, description: 'Deploy the optional Tomcat/WAR application')
+        booleanParam(name: 'RUN_PLAYWRIGHT', defaultValue: false, description: 'Run the optional Playwright UI tests')
         choice(name: 'PLAYWRIGHT_HEADLESS', choices: ['false', 'true'], description: 'Run Playwright headless')
         string(name: 'PLAYWRIGHT_BROWSERS_PATH', defaultValue: 'C:/jenkins/playwright-browsers', description: 'Playwright browser cache directory')
     }
@@ -293,6 +295,10 @@ pipeline {
 
         stage('Deploy Appzillon') {
 
+            when {
+                expression { params.DEPLOY_APPZILLON }
+            }
+
             steps {
 
                 bat '''
@@ -387,6 +393,10 @@ pipeline {
 
         stage('Appzillon Health Check') {
 
+            when {
+                expression { params.DEPLOY_APPZILLON }
+            }
+
             steps {
 
                 bat '''
@@ -450,6 +460,10 @@ pipeline {
         // ============================================================
 
         stage('Playwright Chromium Tests') {
+
+            when {
+                expression { params.RUN_PLAYWRIGHT }
+            }
 
             steps {
 
