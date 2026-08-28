@@ -20,8 +20,6 @@ pipeline {
         string(name: 'BACKEND_PORT', defaultValue: '8080', description: 'Spring Boot port')
         string(name: 'TOMCAT_PORT', defaultValue: '8111', description: 'Tomcat port')
         string(name: 'APPZ_HOME', defaultValue: 'C:/Users/pravallika.k/Downloads/apache-tomcat-9.0.53 2/apache-tomcat-9.0.53', description: 'Tomcat installation directory')
-        string(name: 'APPZ_ARTIFACTS', defaultValue: 'D:/jenkins-testing', description: 'Directory containing the WAR file')
-        string(name: 'WAR_NAME', defaultValue: 'CheckerMaker.war', description: 'WAR file name, if the deployment target requires one')
         string(name: 'APP_CONTEXT_PATH', defaultValue: 'CheckerMaker', description: 'Tomcat application context path, if applicable')
         string(name: 'BACKEND_URL', defaultValue: 'http://localhost:8080/api/accounts?username=maker', description: 'Backend health-check URL')
         string(name: 'APPZILLON_URL', defaultValue: 'http://localhost:8111/CheckerMaker/', description: 'Tomcat application health-check URL, if applicable')
